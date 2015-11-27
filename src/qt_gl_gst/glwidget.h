@@ -1,8 +1,6 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#define ENABLE_YUV_WINDOW       1
-
 #include <QApplication>
 #include <QGLWidget>
 #include <QGLShaderProgram>
@@ -20,11 +18,7 @@
 
 #include "pipeline.h"
 
-#include "model.h"
-
-#ifdef ENABLE_YUV_WINDOW
-#include "yuvdebugwindow.h"
-#endif
+//#include "model.h"
 
 #ifdef IMGTEX_EXT_NEEDED
 #include "GLES2/gl2ext.h"
@@ -154,7 +148,6 @@ public Q_SLOTS:
     /* Input event handlers */
     void cycleVidShaderSlot();
     void cycleModelShaderSlot();
-    void showYUVWindowSlot();
     void loadVideoSlot();
     void loadModelSlot();
     void loadAlphaSlot();
@@ -253,16 +246,11 @@ private:
     GLuint m_alphaTexWidth;
     GLuint m_alphaTexHeight;
 
-    Model *m_model;
+//    Model *m_model;
 
     // FPS counter
     int m_frames;
     QTime m_frameTime;
-
-#ifdef ENABLE_YUV_WINDOW
-    YuvDebugWindow *m_yuvWindow;
-    QVector<QRgb> m_colourMap;
-#endif
 
 };
 

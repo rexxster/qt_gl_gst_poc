@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui opengl
+QT       += core gui opengl widgets
 CONFIG   += console
 
 
@@ -13,27 +13,32 @@ TEMPLATE = app
 
 DEFINES += UNIX VIDI420_SHADERS_NEEDED RECTTEX_EXT_NEEDED GLU_NEEDED
 
+# Gstreamer:
+CONFIG += link_pkgconfig
+PKGCONFIG += gstreamer-0.10
+
+# Model loading using Assimp:
+PKGCONFIG += assimp
+
 SOURCES += \
     main.cpp \
     glwidget.cpp \
-    model.cpp \
+#    model.cpp \
     gstpipeline.cpp \
     pipeline.cpp \
     shaderlists.cpp \
     mainwindow.cpp \
-    yuvdebugwindow.cpp \
     controlsform.cpp \
     applogger.cpp
 
 HEADERS  += \
     glwidget.h \
     asyncwaitingqueue.h \
-    model.h \
+#    model.h \
     gstpipeline.h \
     pipeline.h \
     shaderlists.h \
     mainwindow.h \
-    yuvdebugwindow.h \
     controlsform.h \
     applogger.h
 
@@ -45,9 +50,3 @@ LIBS += -lGLU \
     -lGL \
     -lGLEW
 
-# Gstreamer:
-CONFIG += link_pkgconfig
-PKGCONFIG += gstreamer-0.10
-
-# Model loading using Assimp:
-PKGCONFIG += assimp

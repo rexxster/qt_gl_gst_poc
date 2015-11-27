@@ -52,22 +52,13 @@ GLWidget::GLWidget(int argc, char *argv[], QWidget *parent) :
         m_videoLoc.push_back(QString(argv[vidIx]));
     }
 
-    m_model = NULL;
+//    m_model = NULL;
 
     m_frames = 0;
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_NoSystemBackground);
     setAutoBufferSwap(false);
     setAutoFillBackground(false);
-
-#ifdef ENABLE_YUV_WINDOW
-    m_yuvWindow = new YuvDebugWindow(this);
-    /* Build a colour map */
-    for(int i = 0; i < 256; i++)
-    {
-        m_colourMap.push_back(qRgb(i, i, i));
-    }
-#endif
 
     m_dataFilesDir = QString(qgetenv(DATA_DIR_ENV_VAR_NAME));
     if(m_dataFilesDir.size() == 0)
@@ -196,13 +187,13 @@ void GLWidget::initializeGL()
         this->m_vidTextures.push_back(newInfo);
     }
 
-    m_model = new Model();
-    if(m_model->Load(m_dataFilesDir + DFLT_OBJ_MODEL_FILE_NAME) != 0)
-    {
-        LOG(LOG_OBJLOADER, Logger::Warning, "Couldn't load obj model file %s%s",
-            m_dataFilesDir.toUtf8().constData(), DFLT_OBJ_MODEL_FILE_NAME);
-    }
-    m_model->SetScale(MODEL_BOUNDARY_SIZE);
+//    m_model = new Model();
+//    if(m_model->Load(m_dataFilesDir + DFLT_OBJ_MODEL_FILE_NAME) != 0)
+//    {
+//        LOG(LOG_OBJLOADER, Logger::Warning, "Couldn't load obj model file %s%s",
+//            m_dataFilesDir.toUtf8().constData(), DFLT_OBJ_MODEL_FILE_NAME);
+//    }
+//    m_model->SetScale(MODEL_BOUNDARY_SIZE);
 
 
     for(int vidIx = 0; vidIx < this->m_vidPipelines.size(); vidIx++)
@@ -278,7 +269,7 @@ void GLWidget::paintEvent(QPaintEvent *event)
         break;
     }
 
-    m_model->Draw(m_modelViewMatrix, m_projectionMatrix, currentShader, false);
+//    m_model->Draw(m_modelViewMatrix, m_projectionMatrix, currentShader, false);
 
     switch(enabledModelEffect)
     {
@@ -479,31 +470,6 @@ void GLWidget::newFrame(int vidIx)
 
         this->m_vidTextures[vidIx].texInfoValid = loadNewTexture(vidIx);
 
-#ifdef ENABLE_YUV_WINDOW
-        if((vidIx == 0) && (m_yuvWindow->isVisible()))
-        {
-            QImage yuvImage;
-            switch(this->m_vidTextures[vidIx].colourFormat)
-            {
-            case ColFmt_I420:
-            default:
-                yuvImage = QImage(this->m_vidPipelines[vidIx]->bufToVidDataStart(this->m_vidTextures[vidIx].buffer),
-                                this->m_vidTextures[vidIx].width,
-                                this->m_vidTextures[vidIx].height*1.5f,
-                                QImage::Format_Indexed8);
-                break;
-            case ColFmt_UYVY:
-                yuvImage = QImage(this->m_vidPipelines[vidIx]->bufToVidDataStart(this->m_vidTextures[vidIx].buffer),
-                                this->m_vidTextures[vidIx].width*2,
-                                this->m_vidTextures[vidIx].height,
-                                QImage::Format_Indexed8);
-                break;
-            }
-            yuvImage.setColorTable(m_colourMap);
-            m_yuvWindow->m_imageLabel->setPixmap(QPixmap::fromImage(yuvImage));
-        }
-#endif
-
         printOpenGLError(__FILE__, __LINE__);
 
         this->update();
@@ -692,22 +658,6 @@ void GLWidget::cycleModelShaderSlot()
     LOG(LOG_GL, Logger::Debug1, "model shader now set to %d", m_currentModelEffectIndex);
 }
 
-void GLWidget::showYUVWindowSlot()
-{
-#ifdef ENABLE_YUV_WINDOW
- #ifdef HIDE_GL_WHEN_MODAL_OPEN
-    QSize currentSize = this->size();
-    this->resize(0, 0);
- #endif
-
-    m_yuvWindow->show();
-
- #ifdef HIDE_GL_WHEN_MODAL_OPEN
-    this->resize(currentSize);
- #endif
-#endif
-}
-
 void GLWidget::loadVideoSlot()
 {
 #ifdef HIDE_GL_WHEN_MODAL_OPEN
@@ -744,11 +694,11 @@ void GLWidget::loadModelSlot()
                                                           m_dataFilesDir + "models/", "Wavefront OBJ (*.obj)");
     if(objFileName.isNull() == false)
     {
-        if(m_model->Load(objFileName) != 0)
-        {
-            LOG(LOG_GL, Logger::Error, "Couldn't load obj model file %s", objFileName.toUtf8().constData());
-        }
-        m_model->SetScale(MODEL_BOUNDARY_SIZE);
+//        if(m_model->Load(objFileName) != 0)
+//        {
+//            LOG(LOG_GL, Logger::Error, "Couldn't load obj model file %s", objFileName.toUtf8().constData());
+//        }
+//        m_model->SetScale(MODEL_BOUNDARY_SIZE);
     }
 
 #ifdef HIDE_GL_WHEN_MODAL_OPEN
@@ -943,9 +893,6 @@ void GLWidget::keyPressEvent(QKeyEvent *e)
                           "<space> or <click>        - stop rotation\n"
                           "<+>, <-> or <ctrl + drag> - zoom model\n"
                           "<arrow keys> or <drag>    - rotate model\n"
-#ifdef ENABLE_YUV_WINDOW
-                          "y - View yuv data of vid 0 in modeless window"
-#endif
                           "\n";
             break;
         case Qt::Key_Escape:
@@ -1003,12 +950,6 @@ void GLWidget::keyPressEvent(QKeyEvent *e)
         case Qt::Key_Down:
            m_xRot += 8;
             break;
-
-#ifdef ENABLE_YUV_WINDOW
-        case Qt::Key_Y:
-            showYUVWindowSlot();
-            break;
-#endif
 
         default:
             QGLWidget::keyPressEvent(e);

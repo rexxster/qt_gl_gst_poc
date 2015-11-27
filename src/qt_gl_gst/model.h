@@ -6,7 +6,7 @@
 #include <QVector3D>
 #include <QGLShaderProgram>
 
-#include "assimp.h"
+//#include "assimp.h"
 #include "aiPostProcess.h"
 #include "aiScene.h"
 #include "DefaultLogger.h"
