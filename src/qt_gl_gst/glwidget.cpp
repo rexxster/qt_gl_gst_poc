@@ -682,30 +682,6 @@ void GLWidget::loadVideoSlot()
 #endif
 }
 
-void GLWidget::loadModelSlot()
-{
-#ifdef HIDE_GL_WHEN_MODAL_OPEN
-    QSize currentSize = this->size();
-    this->resize(0, 0);
-#endif
-
-    // Load a Wavefront OBJ model file. Get the filename before doing anything else
-    QString objFileName = QFileDialog::getOpenFileName(0, "Select a Wavefront OBJ file",
-                                                          m_dataFilesDir + "models/", "Wavefront OBJ (*.obj)");
-    if(objFileName.isNull() == false)
-    {
-//        if(m_model->Load(objFileName) != 0)
-//        {
-//            LOG(LOG_GL, Logger::Error, "Couldn't load obj model file %s", objFileName.toUtf8().constData());
-//        }
-//        m_model->SetScale(MODEL_BOUNDARY_SIZE);
-    }
-
-#ifdef HIDE_GL_WHEN_MODAL_OPEN
-    this->resize(currentSize);
-#endif
-}
-
 void GLWidget::loadAlphaSlot()
 {
 #ifdef HIDE_GL_WHEN_MODAL_OPEN
@@ -909,9 +885,6 @@ void GLWidget::keyPressEvent(QKeyEvent *e)
             break;
         case Qt::Key_A:
             loadAlphaSlot();
-            break;
-        case Qt::Key_M:
-            loadModelSlot();
             break;
         case Qt::Key_V:
             loadVideoSlot();

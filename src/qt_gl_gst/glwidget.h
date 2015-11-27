@@ -149,7 +149,6 @@ public Q_SLOTS:
     void cycleVidShaderSlot();
     void cycleModelShaderSlot();
     void loadVideoSlot();
-    void loadModelSlot();
     void loadAlphaSlot();
     void rotateToggleSlot(bool toggleState);
     void stackVidsToggleSlot(int toggleState);
