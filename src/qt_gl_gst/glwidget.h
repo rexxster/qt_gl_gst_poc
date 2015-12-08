@@ -146,8 +146,6 @@ public Q_SLOTS:
     void newFrame(int vidIx);
     void pipelineFinished(int vidIx);
     /* Input event handlers */
-    void cycleVidShaderSlot();
-    void cycleModelShaderSlot();
     void loadVideoSlot();
     void loadAlphaSlot();
     void rotateToggleSlot(bool toggleState);

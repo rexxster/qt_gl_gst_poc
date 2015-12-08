@@ -627,37 +627,6 @@ void GLWidget::animate()
     update();
 }
 
-// Input events
-void GLWidget::cycleVidShaderSlot()
-{
-    int lastVidDrawn = this->m_vidTextures.size() - 1;
-    if (this->m_vidTextures[lastVidDrawn].effect >= VidShaderLast)
-        this->m_vidTextures[lastVidDrawn].effect = VidShaderFirst;
-    else
-        this->m_vidTextures[lastVidDrawn].effect = (VidShaderEffectType) ((int) this->m_vidTextures[lastVidDrawn].effect + 1);
-
-    setAppropriateVidShader(lastVidDrawn);
-    this->m_vidTextures[lastVidDrawn].shader->bind();
-    printOpenGLError(__FILE__, __LINE__);
-    // Setting shader variables here will have no effect as they are set on every render,
-    // but do it to check for errors, so we don't need to check on every render
-    // and program output doesn't go mad
-    setVidShaderVars(lastVidDrawn, true);
-
-    LOG(LOG_GL, Logger::Debug1, "vid shader for vid %d now set to %d",
-        lastVidDrawn, this->m_vidTextures[lastVidDrawn].effect);
-}
-
-void GLWidget::cycleModelShaderSlot()
-{
-    if (m_currentModelEffectIndex >= ModelEffectLast)
-        m_currentModelEffectIndex = ModelEffectFirst;
-    else
-        m_currentModelEffectIndex = (ModelEffectType) ((int) m_currentModelEffectIndex + 1);
-
-    LOG(LOG_GL, Logger::Debug1, "model shader now set to %d", m_currentModelEffectIndex);
-}
-
 void GLWidget::loadVideoSlot()
 {
 #ifdef HIDE_GL_WHEN_MODAL_OPEN
@@ -672,8 +641,6 @@ void GLWidget::loadVideoSlot()
     if(newFileName.isNull() == false)
     {
         this->m_videoLoc[lastVidDrawn] = newFileName;
-
-        //this->m_vidPipelines[lastVidDrawn]->setChooseNewOnFinished();
         this->m_vidPipelines[lastVidDrawn]->Stop();
     }
 
@@ -880,17 +847,11 @@ void GLWidget::keyPressEvent(QKeyEvent *e)
             cycleBackgroundSlot();
             break;
 
-        case Qt::Key_S:
-            cycleVidShaderSlot();
-            break;
         case Qt::Key_A:
             loadAlphaSlot();
             break;
         case Qt::Key_V:
             loadVideoSlot();
-            break;
-        case Qt::Key_O:
-            cycleModelShaderSlot();
             break;
         case Qt::Key_P:
             // Decouple bool used within class from Qt check box state enum values
