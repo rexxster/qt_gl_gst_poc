@@ -147,10 +147,6 @@ public Q_SLOTS:
     void pipelineFinished(int vidIx);
     /* Input event handlers */
     void loadVideoSlot();
-    void loadAlphaSlot();
-    void rotateToggleSlot(bool toggleState);
-    void stackVidsToggleSlot(int toggleState);
-    void cycleBackgroundSlot();
     void resetPosSlot();
     void exitSlot();
 
