@@ -202,8 +202,6 @@ private:
     QMatrix4x4 m_projectionMatrix;
 
     int m_clearColorIndex;
-    bool m_stackVidQuads;
-    ModelEffectType m_currentModelEffectIndex;
 
     QGLShaderProgram m_brickProg;
 #ifdef VIDI420_SHADERS_NEEDED

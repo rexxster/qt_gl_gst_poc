@@ -6,6 +6,7 @@
 
 QT       += core gui opengl widgets
 CONFIG   += console
+QMAKE_CXXFLAGS += -DGST_DISABLE_DEPRECATED
 
 
 TARGET = qt_gl_gst

@@ -157,7 +157,7 @@ void GStreamerPipeline::on_new_pad(GstElement *element,
 
     if (g_strrstr (gst_structure_get_name (str), "video"))
     {
-        sinkpad = gst_element_get_pad (p->m_videosink, "sink");
+        sinkpad = gst_element_get_static_pad (p->m_videosink, "sink");
 
         g_object_set (G_OBJECT (p->m_videosink),
                       "sync", TRUE,
@@ -173,7 +173,7 @@ void GStreamerPipeline::on_new_pad(GstElement *element,
                           p);
     }
     else
-        sinkpad = gst_element_get_pad (p->m_audioqueue, "sink");
+        sinkpad = gst_element_get_static_pad (p->m_audioqueue, "sink");
 
     gst_caps_unref (caps);
 
