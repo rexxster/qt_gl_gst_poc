@@ -16,7 +16,7 @@ DEFINES += UNIX VIDI420_SHADERS_NEEDED RECTTEX_EXT_NEEDED GLU_NEEDED
 
 # Gstreamer:
 CONFIG += link_pkgconfig
-PKGCONFIG += gstreamer-0.10
+PKGCONFIG += gstreamer-1.0 gstreamer-video-1.0
 
 # Model loading using Assimp:
 PKGCONFIG += assimp

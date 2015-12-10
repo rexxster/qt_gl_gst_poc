@@ -307,6 +307,7 @@ bool GLWidget::loadNewTexture(int vidIx)
     bool texLoaded = false;
 
     glBindTexture (GL_RECT_VID_TEXTURE_2D, this->m_vidTextures[vidIx].texId);
+    unsigned char *buffer = this->m_vidPipelines[vidIx]->mapBufToVidDataStart(this->m_vidTextures[vidIx].buffer);
 
     switch(this->m_vidTextures[vidIx].colourFormat)
     {
@@ -315,7 +316,7 @@ bool GLWidget::loadNewTexture(int vidIx)
                            this->m_vidTextures[vidIx].width,
                            this->m_vidTextures[vidIx].height*1.5f,
                            0, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-                           this->m_vidPipelines[vidIx]->bufToVidDataStart(this->m_vidTextures[vidIx].buffer));
+                           buffer);
             texLoaded = true;
             break;
         case ColFmt_UYVY:
@@ -323,14 +324,16 @@ bool GLWidget::loadNewTexture(int vidIx)
                            this->m_vidTextures[vidIx].width*2,
                            this->m_vidTextures[vidIx].height,
                            0, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-                           this->m_vidPipelines[vidIx]->bufToVidDataStart(this->m_vidTextures[vidIx].buffer));
+                           buffer);
             texLoaded = true;
             break;
         default:
             LOG(LOG_GL, Logger::Error, "Decide how to load texture for colour format %d",
                 this->m_vidTextures[vidIx].colourFormat);
             break;
-    }
+    };
+
+    this->m_vidPipelines[vidIx]->unmapBufToVidDataStart(this->m_vidTextures[vidIx].buffer);
 
     return texLoaded;
 }
