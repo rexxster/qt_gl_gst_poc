@@ -2,7 +2,6 @@
 #include "applogger.h"
 
 #include "glwidget.h"
-#include "controlsform.h"
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
     QMainWindow(parent)
@@ -14,7 +13,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
 
     GLWidget *glWidget = new GLWidget(argc, argv, this);
     glWidget->initVideo();
+    glWidget->show();
 
-    ControlsForm *controlsForm = new ControlsForm(glWidget, this);
-    setCentralWidget(controlsForm);
+    setCentralWidget(glWidget);
 }

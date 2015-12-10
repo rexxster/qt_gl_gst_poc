@@ -28,7 +28,6 @@ SOURCES += \
     pipeline.cpp \
     shaderlists.cpp \
     mainwindow.cpp \
-    controlsform.cpp \
     applogger.cpp
 
 HEADERS  += \
@@ -39,11 +38,9 @@ HEADERS  += \
     pipeline.h \
     shaderlists.h \
     mainwindow.h \
-    controlsform.h \
     applogger.h
 
-FORMS += \
-    controlsform.ui
+FORMS +=
 
 # OpenGL support libraries:
 LIBS += -lGLU \
