@@ -146,7 +146,6 @@ public Q_SLOTS:
     void newFrame(int vidIx);
     void pipelineFinished(int vidIx);
     /* Input event handlers */
-    void loadVideoSlot();
     void resetPosSlot();
     void exitSlot();
 
@@ -170,7 +169,6 @@ protected:
     QVector<VidTextureInfo> m_vidTextures;
 
 private:
-    void setAppropriateVidShader(int vidIx);
     void setVidShaderVars(int vidIx, bool printErrors);
     int loadShaderFile(QString fileName, QString &shaderSource);
     int setupShader(QGLShaderProgram *prog, QString baseFileName, bool vertNeeded, bool fragNeeded);
@@ -228,8 +226,6 @@ private:
 #endif
 
     // Video shader effects vars - for simplicitys sake make them general to all vids
-    QVector4D m_colourHilightRangeMin;
-    QVector4D m_colourHilightRangeMax;
     QVector4D m_colourComponentSwapR;
     QVector4D m_colourComponentSwapG;
     QVector4D m_colourComponentSwapB;
