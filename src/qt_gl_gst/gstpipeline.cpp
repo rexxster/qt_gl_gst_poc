@@ -56,7 +56,7 @@ void GStreamerPipeline::Configure()
     }
     this->m_decodebin = gst_element_factory_make ("decodebin", "decodebin");
     this->m_videosink = gst_element_factory_make ("fakesink", "videosink");
-    this->m_audiosink = gst_element_factory_make ("alsasink", "audiosink");
+    //this->m_audiosink = gst_element_factory_make ("alsasink", "audiosink");
     this->m_audioconvert = gst_element_factory_make ("audioconvert", "audioconvert");
     this->m_audioqueue = gst_element_factory_make ("queue", "audioqueue");
 

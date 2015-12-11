@@ -148,11 +148,12 @@ void GLWidget::paintEvent(QPaintEvent *event)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     this->m_modelViewMatrix = QMatrix4x4();
-    this->m_modelViewMatrix.lookAt(QVector3D(0.0, 0.0, -5.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
-    this->m_modelViewMatrix.rotate(-m_zRot / 16.0, 0.0, 0.0, 1.0);
-    this->m_modelViewMatrix.rotate(-m_xRot / 16.0, 1.0, 0.0, 0.0);
-    this->m_modelViewMatrix.rotate(m_yRot / 16.0, 0.0, 1.0, 0.0);
-    this->m_modelViewMatrix.scale(m_scaleValue);
+//    this->m_modelViewMatrix.lookAt(QVector3D(0.0, 0.0, -5.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
+    this->m_modelViewMatrix.lookAt(QVector3D(0.0, 0.0, -0.1), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
+//    this->m_modelViewMatrix.rotate(-m_zRot / 16.0, 0.0, 0.0, 1.0);
+//    this->m_modelViewMatrix.rotate(-m_xRot / 16.0, 1.0, 0.0, 0.0);
+//    this->m_modelViewMatrix.rotate(m_yRot / 16.0, 0.0, 1.0, 0.0);
+//    this->m_modelViewMatrix.scale(m_scaleValue);
 
     // Draw videos around the object
     for(int vidIx = 0; vidIx < this->m_vidTextures.size(); vidIx++)
@@ -172,10 +173,11 @@ void GLWidget::paintEvent(QPaintEvent *event)
 
             QMatrix4x4 vidQuadMatrix = this->m_modelViewMatrix;
 
-            vidQuadMatrix.rotate((360/this->m_vidTextures.size())*vidIx, 0.0, 1.0, 0.0);
-            vidQuadMatrix.translate(0.0, 0.0, 2.0);
+//            vidQuadMatrix.rotate((360/this->m_vidTextures.size())*vidIx, 0.0, 1.0, 0.0);
+//            vidQuadMatrix.translate(0.0, 0.0, 2.0);
 
-            vidShader->setUniformValue("u_mvp_matrix", m_projectionMatrix * vidQuadMatrix);
+            vidShader->setUniformValue("u_mvp_matrix", m_projectionMatrix);
+//            vidShader->setUniformValue("u_mvp_matrix", m_projectionMatrix * vidQuadMatrix);
             vidShader->setUniformValue("u_mv_matrix", vidQuadMatrix);
 
             // Need to set these arrays up here as shader instances are shared between
@@ -215,13 +217,14 @@ void GLWidget::paintEvent(QPaintEvent *event)
 
 void GLWidget::resizeGL(int wid, int ht)
 {
-    float vp = 0.8f;
+    float vp = 1.0f;
     float aspect = (float) wid / (float) ht;
 
     glViewport(0, 0, wid, ht);
 
     this->m_projectionMatrix = QMatrix4x4();
-    this->m_projectionMatrix.frustum(-vp, vp, -vp / aspect, vp / aspect, 1.0, 50.0);
+    this->m_projectionMatrix.setToIdentity();
+//    this->m_projectionMatrix.frustum(-vp, vp, -vp / aspect, vp / aspect, 1.0, 50.0);
 }
 
 void GLWidget::newFrame(int vidIx)
@@ -376,7 +379,7 @@ void GLWidget::pipelineFinished(int vidIx)
     else
     {
         delete(this->m_vidPipelines[vidIx]);
-        //        this->m_vidTextures[vidIx].texInfoValid = false;
+        this->m_vidTextures[vidIx].texInfoValid = false;
 
         this->m_vidPipelines[vidIx] = createPipeline(vidIx);
 

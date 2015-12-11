@@ -88,8 +88,8 @@ typedef enum
 
 #define NUM_VIDTEXTURE_VERTICES_X    2
 #define NUM_VIDTEXTURE_VERTICES_Y    2
-#define VIDTEXTURE_LEFT_X            -1.3f
-#define VIDTEXTURE_RIGHT_X           1.3f
+#define VIDTEXTURE_LEFT_X            -1.0f
+#define VIDTEXTURE_RIGHT_X           1.0f
 #define VIDTEXTURE_TOP_Y             1.0f
 #define VIDTEXTURE_BOT_Y             -1.0f
 
