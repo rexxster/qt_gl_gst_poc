@@ -11,7 +11,7 @@ CONFIG   += console
 TARGET = qt_gl_gst
 TEMPLATE = app
 
-DEFINES += UNIX VIDI420_SHADERS_NEEDED RECTTEX_EXT_NEEDED GLU_NEEDED
+DEFINES += UNIX VIDI420_SHADERS_NEEDED VIDUYVY_SHADERS_NEEDED RECTTEX_EXT_NEEDED GLU_NEEDED
 
 SOURCES += \
     main.cpp \
@@ -47,7 +47,7 @@ LIBS += -lGLU \
 
 # Gstreamer:
 CONFIG += link_pkgconfig
-PKGCONFIG += gstreamer-0.10
+PKGCONFIG += gstreamer-1.0 gstreamer-video-1.0
 
 # Model loading using Assimp:
 PKGCONFIG += assimp

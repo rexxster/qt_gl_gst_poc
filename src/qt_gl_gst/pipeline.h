@@ -49,7 +49,7 @@ public:
     int getWidth() { return m_width; }
     int getHeight() { return m_height; }
     ColFormat getColourFormat() { return m_colFormat; }
-    virtual unsigned char *bufToVidDataStart(void *buf) = 0;
+//    virtual unsigned char *bufToVidDataStart(void *buf) = 0;
 
     bool isFinished() { return this->m_finished; }
 

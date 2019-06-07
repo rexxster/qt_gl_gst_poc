@@ -14,7 +14,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
     GlobalLog.SetModuleLogLevel(LOG_GL, Logger::Info);
     GlobalLog.SetModuleLogLevel(LOG_GLSHADERS, Logger::Info);
     GlobalLog.SetModuleLogLevel(LOG_OBJLOADER, Logger::Info);
-    GlobalLog.SetModuleLogLevel(LOG_VIDPIPELINE, Logger::Info);
+    GlobalLog.SetModuleLogLevel(LOG_VIDPIPELINE, Logger::Debug2);
 
 #ifdef OMAP3530
     GLWidget *glWidget = new GLPowerVRWidget(argc, argv, this);

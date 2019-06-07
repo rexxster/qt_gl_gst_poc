@@ -6,11 +6,12 @@
 #include <QVector3D>
 #include <QGLShaderProgram>
 
-#include "assimp.h"
-#include "aiPostProcess.h"
-#include "aiScene.h"
-#include "DefaultLogger.h"
-#include "LogStream.h"
+//#include <assimp/assimp.h>
+#include <assimp/cimport.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/LogStream.hpp>
 
 class ModelMesh
 {
@@ -56,16 +57,16 @@ public:
 private:
     void aiNodesToVertexArrays();
     void get_bounding_box_for_node (const struct aiNode* nd,
-            struct aiVector3D* min,
-            struct aiVector3D* max,
-            struct aiMatrix4x4* trafo);
-    void get_bounding_box (struct aiVector3D* min, struct aiVector3D* max);
+            aiVector3D* min,
+            aiVector3D* max,
+            aiMatrix4x4* trafo);
+    void get_bounding_box (aiVector3D* min, aiVector3D* max);
 
     const struct aiScene* m_scene;
     QVector<ModelNode> m_nodes;
-    struct aiVector3D m_sceneCenter;
-    struct aiVector3D m_sceneMin;
-    struct aiVector3D m_sceneMax;
+    aiVector3D m_sceneCenter;
+    aiVector3D m_sceneMin;
+    aiVector3D m_sceneMax;
     qreal m_scaleFactor;
 
 };

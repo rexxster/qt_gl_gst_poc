@@ -2,7 +2,6 @@
 #include "gstpipeline.h"
 #include "applogger.h"
 
-
 GStreamerPipeline::GStreamerPipeline(int vidIx,
                    const QString &videoLocation,
                    const char *renderer_slot,
@@ -53,7 +52,7 @@ void GStreamerPipeline::Configure()
         this->m_source = gst_element_factory_make ("filesrc", "filesrc");
         g_object_set (G_OBJECT (this->m_source), "location", /*"video.avi"*/ m_videoLocation.toUtf8().constData(), NULL);
     }
-    this->m_decodebin = gst_element_factory_make ("decodebin2", "decodebin");
+    this->m_decodebin = gst_element_factory_make ("decodebin", "decodebin");
     this->m_videosink = gst_element_factory_make ("fakesink", "videosink");
     this->m_audiosink = gst_element_factory_make ("alsasink", "audiosink");
     this->m_audioconvert = gst_element_factory_make ("audioconvert", "audioconvert");
@@ -152,12 +151,13 @@ void GStreamerPipeline::on_new_pad(GstElement *element,
 
     Q_UNUSED(element);
 
-    caps = gst_pad_get_caps (pad);
+//    caps = gst_pad_get_caps (pad);
+    caps = gst_pad_query_caps (pad, nullptr);
     str = gst_caps_get_structure (caps, 0);
 
     if (g_strrstr (gst_structure_get_name (str), "video"))
     {
-        sinkpad = gst_element_get_pad (p->m_videosink, "sink");
+        sinkpad = gst_element_get_static_pad (p->m_videosink, "sink");
 
         g_object_set (G_OBJECT (p->m_videosink),
                       "sync", TRUE,
@@ -173,7 +173,7 @@ void GStreamerPipeline::on_new_pad(GstElement *element,
                           p);
     }
     else
-        sinkpad = gst_element_get_pad (p->m_audioqueue, "sink");
+        sinkpad = gst_element_get_static_pad (p->m_audioqueue, "sink");
 
     gst_caps_unref (caps);
 
@@ -187,17 +187,17 @@ void GStreamerPipeline::on_gst_buffer(GstElement * element,
                         GstPad * pad,
                         GStreamerPipeline* p)
 {
-    LOG(LOG_VIDPIPELINE, Logger::Debug2, "vid %d, element=%p, buf=%p, pad=%p, p=%p, bufdata=%p\n",
-                   p->getVidIx(), element, buf, pad, p, GST_BUFFER_DATA(buf));
+    LOG(LOG_VIDPIPELINE, Logger::Debug2, "vid %d, element=%p, buf=%p, pad=%p, p=%p, bufdata=\n",
+                   p->getVidIx(), element, buf, pad, p);
 
-    Q_UNUSED(pad)
+//    Q_UNUSED(pad)
     Q_UNUSED(element)
 
     if(p->m_vidInfoValid == false)
     {
         LOG(LOG_VIDPIPELINE, Logger::Debug1, "Received first frame of vid %d", p->getVidIx());
 
-        GstCaps *caps = gst_pad_get_negotiated_caps (pad);
+        GstCaps *caps = gst_pad_get_current_caps (pad);
         if (caps)
         {
             GstStructure *structure = gst_caps_get_structure (caps, 0);
@@ -209,7 +209,7 @@ void GStreamerPipeline::on_gst_buffer(GstElement * element,
             LOG(LOG_VIDPIPELINE, Logger::Error, "on_gst_buffer() - Could not get caps for pad!");
         }
 
-        p->m_colFormat = discoverColFormat(buf);
+        p->m_colFormat = discoverColFormat(buf, caps);
         p->m_vidInfoValid = true;
     }
 
@@ -255,11 +255,11 @@ gboolean GStreamerPipeline::bus_call(GstBus *bus, GstMessage *msg, GStreamerPipe
     return TRUE;
 }
 
-ColFormat GStreamerPipeline::discoverColFormat(GstBuffer * buf)
+ColFormat GStreamerPipeline::discoverColFormat(GstBuffer *buf, GstCaps *pCaps)
 {
     // Edit for consistent style later
     gchar *pTmp	 = NULL;
-    GstCaps *pCaps	 = NULL;
+//    GstCaps *pCaps	 = NULL;
     GstStructure *pStructure = NULL;
     gint iDepth;
     gint iBitsPerPixel;
@@ -269,13 +269,17 @@ ColFormat GStreamerPipeline::discoverColFormat(GstBuffer * buf)
     gint iAlphaMask;
     ColFormat ret = ColFmt_Unknown;
 
-    pTmp = gst_caps_to_string (GST_BUFFER_CAPS(buf));
-    LOG(LOG_VIDPIPELINE, Logger::Info, "%s", pTmp);
-    g_free (pTmp);
+//    GstMapInfo info;
+//    if (gst_buffer_map(buf, &info, GST_MAP_READ)) {
+        pTmp = gst_caps_to_string (pCaps);
+        LOG(LOG_VIDPIPELINE, Logger::Info, "%s", pTmp);
+//        g_free (pTmp);
+//    }
 
-    LOG(LOG_VIDPIPELINE, Logger::Debug1, "buffer-size in bytes: %d", GST_BUFFER_SIZE (buf));
+//    LOG(LOG_VIDPIPELINE, Logger::Debug1, "buffer-size in bytes: %d", GST_BUFFER_SIZE (buf));
 
-    pCaps = gst_buffer_get_caps (buf);
+//    pCaps = gst_buffer_get_caps (buf);
+//    pCaps = gst_pad_get_current_caps();
     pStructure = gst_caps_get_structure (pCaps, 0);
 
     if (gst_structure_has_name (pStructure, "video/x-raw-rgb"))
@@ -336,24 +340,32 @@ ColFormat GStreamerPipeline::discoverColFormat(GstBuffer * buf)
             break;
         }
     }
-    else if (gst_structure_has_name (pStructure, "video/x-raw-yuv"))
+    else if (gst_structure_has_name (pStructure, "video/x-raw"))
     {
-        guint32 uiFourCC;
+        GstVideoInfo info;
+        gst_video_info_from_caps(&info, pCaps);
+        guint32 uiFourCC = info.finfo->format;
+        LOG(LOG_VIDPIPELINE, Logger::Info, "%i", uiFourCC);
 
-        gst_structure_get_fourcc (pStructure, "format", &uiFourCC);
+//        gst_structure_get_fourcc (pStructure, "format", &uiFourCC);
 
         switch (uiFourCC)
         {
+        case GST_VIDEO_FORMAT_I420:
+        case GST_VIDEO_FORMAT_NV12:
         case GST_MAKE_FOURCC ('I', '4', '2', '0'):
             LOG(LOG_VIDPIPELINE, Logger::Info, "I420 (0x%X)", uiFourCC);
             ret = ColFmt_I420;
             break;
 
+        case GST_VIDEO_FORMAT_IYU1:
+        case GST_VIDEO_FORMAT_IYU2:
         case GST_MAKE_FOURCC ('I', 'Y', 'U', 'V'):
             LOG(LOG_VIDPIPELINE, Logger::Info, "IYUV (0x%X)", uiFourCC);
             ret = ColFmt_IYUV;
             break;
 
+        case GST_VIDEO_FORMAT_YV12:
         case GST_MAKE_FOURCC ('Y', 'V', '1', '2'):
             LOG(LOG_VIDPIPELINE, Logger::Info, "YV12 (0x%X)", uiFourCC);
             ret = ColFmt_YV12;
@@ -364,6 +376,7 @@ ColFormat GStreamerPipeline::discoverColFormat(GstBuffer * buf)
             ret = ColFmt_YUYV;
             break;
 
+        case GST_VIDEO_FORMAT_YUY2:
         case GST_MAKE_FOURCC ('Y', 'U', 'Y', '2'):
             LOG(LOG_VIDPIPELINE, Logger::Info, "YUY2 (0x%X)", uiFourCC);
             ret = ColFmt_YUY2;
@@ -384,6 +397,7 @@ ColFormat GStreamerPipeline::discoverColFormat(GstBuffer * buf)
             ret = ColFmt_UYVY;
             break;
 
+        case GST_VIDEO_FORMAT_Y42B:
         case GST_MAKE_FOURCC ('Y', '4', '2', '2'):
             LOG(LOG_VIDPIPELINE, Logger::Info, "Y422 (0x%X)", uiFourCC);
             ret = ColFmt_Y422;
@@ -412,19 +426,20 @@ ColFormat GStreamerPipeline::discoverColFormat(GstBuffer * buf)
 
 quint32 GStreamerPipeline::discoverFourCC(GstBuffer * buf)
 {
-    guint32       uiFourCC = 0;
-    GstCaps*      pCaps	 = NULL;
-    GstStructure* pStructure = NULL;
+    return 0;
+//    guint32       uiFourCC = 0;
+//    GstCaps*      pCaps	 = NULL;
+//    GstStructure* pStructure = NULL;
 
-    pCaps = gst_buffer_get_caps (buf);
-    pStructure = gst_caps_get_structure (pCaps, 0);
+//    pCaps = gst_buffer_get_caps (buf);
+//    pStructure = gst_caps_get_structure (pCaps, 0);
 
-    if (gst_structure_has_name (pStructure, "video/x-raw-yuv"))
-    {
-        gst_structure_get_fourcc (pStructure, "format", &uiFourCC);
-    }
+//    if (gst_structure_has_name (pStructure, "video/x-raw-yuv"))
+//    {
+//        gst_structure_get_fourcc (pStructure, "format", &uiFourCC);
+//    }
 
-    return (quint32)uiFourCC;
+//    return (quint32)uiFourCC;
 }
 
 void GstIncomingBufThread::run()

@@ -6,6 +6,7 @@
 #include <QThread>
 
 #include <gst/gst.h>
+#include <gst/video/video-info.h>
 
 // Re-include base class header here to keep the MOC happy:
 #include "pipeline.h"
@@ -67,7 +68,6 @@ public:
 
     void Configure();
     void Start();
-    unsigned char *bufToVidDataStart(void *buf) { return GST_BUFFER_DATA(buf); }
 
     // bit lazy just making these public for gst callbacks, but it'll do for now
     GstElement *m_source;
@@ -99,7 +99,7 @@ protected:
     static void on_gst_buffer(GstElement * element, GstBuffer * buf, GstPad * pad, GStreamerPipeline* p);
     static void on_new_pad(GstElement *element, GstPad *pad, GStreamerPipeline* p);
     static gboolean bus_call (GstBus *bus, GstMessage *msg, GStreamerPipeline* p);
-    static ColFormat discoverColFormat(GstBuffer * buf);
+    static ColFormat discoverColFormat(GstBuffer *buffer, GstCaps *pCaps);
     static quint32 discoverFourCC(GstBuffer * buf);
 };
 

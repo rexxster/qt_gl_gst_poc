@@ -483,20 +483,27 @@ void GLWidget::newFrame(int vidIx)
         if((vidIx == 0) && (m_yuvWindow->isVisible()))
         {
             QImage yuvImage;
+            GstMapInfo info;
             switch(this->m_vidTextures[vidIx].colourFormat)
             {
             case ColFmt_I420:
             default:
-                yuvImage = QImage(this->m_vidPipelines[vidIx]->bufToVidDataStart(this->m_vidTextures[vidIx].buffer),
-                                this->m_vidTextures[vidIx].width,
-                                this->m_vidTextures[vidIx].height*1.5f,
-                                QImage::Format_Indexed8);
+                if (gst_buffer_map((GstBuffer*)this->m_vidTextures[vidIx].buffer, &info, GST_MAP_READ)) {
+                    yuvImage = QImage(info.data,
+                              this->m_vidTextures[vidIx].width,
+                              this->m_vidTextures[vidIx].height*1.5f,
+                              QImage::Format_Indexed8);
+                    gst_buffer_unmap((GstBuffer*)this->m_vidTextures[vidIx].buffer, &info);
+                }
                 break;
             case ColFmt_UYVY:
-                yuvImage = QImage(this->m_vidPipelines[vidIx]->bufToVidDataStart(this->m_vidTextures[vidIx].buffer),
-                                this->m_vidTextures[vidIx].width*2,
-                                this->m_vidTextures[vidIx].height,
-                                QImage::Format_Indexed8);
+                if (gst_buffer_map((GstBuffer*)this->m_vidTextures[vidIx].buffer, &info, GST_MAP_READ)) {
+                    yuvImage = QImage(info.data,
+                            this->m_vidTextures[vidIx].width*2,
+                            this->m_vidTextures[vidIx].height,
+                            QImage::Format_Indexed8);
+                    gst_buffer_unmap((GstBuffer*)this->m_vidTextures[vidIx].buffer, &info);
+                }
                 break;
             }
             yuvImage.setColorTable(m_colourMap);
@@ -516,23 +523,31 @@ bool GLWidget::loadNewTexture(int vidIx)
 
     glBindTexture (GL_RECT_VID_TEXTURE_2D, this->m_vidTextures[vidIx].texId);
 
+    GstMapInfo info;
+
     switch(this->m_vidTextures[vidIx].colourFormat)
     {
     case ColFmt_I420:
-        glTexImage2D  (GL_RECT_VID_TEXTURE_2D, 0, GL_LUMINANCE,
+        if (gst_buffer_map((GstBuffer*)this->m_vidTextures[vidIx].buffer, &info, GST_MAP_READ)) {
+            glTexImage2D  (GL_RECT_VID_TEXTURE_2D, 0, GL_LUMINANCE,
                        this->m_vidTextures[vidIx].width,
                        this->m_vidTextures[vidIx].height*1.5f,
                        0, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-                       this->m_vidPipelines[vidIx]->bufToVidDataStart(this->m_vidTextures[vidIx].buffer));
-        texLoaded = true;
+                       info.data);
+            gst_buffer_unmap((GstBuffer*)this->m_vidTextures[vidIx].buffer, &info);
+            texLoaded = true;
+        }
         break;
     case ColFmt_UYVY:
-        glTexImage2D  (GL_RECT_VID_TEXTURE_2D, 0, GL_LUMINANCE,
+        if (gst_buffer_map((GstBuffer*)this->m_vidTextures[vidIx].buffer, &info, GST_MAP_READ)) {
+            glTexImage2D  (GL_RECT_VID_TEXTURE_2D, 0, GL_LUMINANCE,
                        this->m_vidTextures[vidIx].width*2,
                        this->m_vidTextures[vidIx].height,
                        0, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-                       this->m_vidPipelines[vidIx]->bufToVidDataStart(this->m_vidTextures[vidIx].buffer));
-        texLoaded = true;
+                       info.data);
+            gst_buffer_unmap((GstBuffer*)this->m_vidTextures[vidIx].buffer, &info);
+            texLoaded = true;
+        }
         break;
     default:
         LOG(LOG_GL, Logger::Error, "Decide how to load texture for colour format %d",

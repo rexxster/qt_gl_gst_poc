@@ -37,14 +37,14 @@ Model::Model()
     {
     // deliberate fall through:
     case Logger::Debug2:
-        assimpLogSeverity |= Assimp::Logger::DEBUGGING;
+        assimpLogSeverity |= Assimp::Logger::NORMAL;
     case Logger::Debug1:
     case Logger::Info:
-        assimpLogSeverity |= Assimp::Logger::INFO;
+        assimpLogSeverity |= Assimp::Logger::NORMAL;
     case Logger::Warning:
-        assimpLogSeverity |= Assimp::Logger::WARN;
+        assimpLogSeverity |= Assimp::Logger::NORMAL;
     case Logger::Error:
-        assimpLogSeverity |= Assimp::Logger::ERR;
+        assimpLogSeverity |= Assimp::Logger::NORMAL;
         break;
     default:
         break;
@@ -285,11 +285,11 @@ void Model::Draw(QMatrix4x4 modelViewMatrix, QMatrix4x4 projectionMatrix, QGLSha
 
 
 void Model::get_bounding_box_for_node (const struct aiNode* nd,
-        struct aiVector3D* min,
-        struct aiVector3D* max,
-        struct aiMatrix4x4* trafo)
+        aiVector3D* min,
+        aiVector3D* max,
+        aiMatrix4x4* trafo)
 {
-        struct aiMatrix4x4 prev;
+        aiMatrix4x4 prev;
         unsigned int n = 0, t;
 
         prev = *trafo;
@@ -299,7 +299,7 @@ void Model::get_bounding_box_for_node (const struct aiNode* nd,
                 const struct aiMesh* mesh = m_scene->mMeshes[nd->mMeshes[n]];
                 for (t = 0; t < mesh->mNumVertices; ++t) {
 
-                        struct aiVector3D tmp = mesh->mVertices[t];
+                        aiVector3D tmp = mesh->mVertices[t];
                         aiTransformVecByMatrix4(&tmp,trafo);
 
                         min->x = qMin(min->x,tmp.x);
@@ -318,9 +318,9 @@ void Model::get_bounding_box_for_node (const struct aiNode* nd,
         *trafo = prev;
 }
 
-void Model::get_bounding_box (struct aiVector3D* min, struct aiVector3D* max)
+void Model::get_bounding_box (aiVector3D* min, aiVector3D* max)
 {
-        struct aiMatrix4x4 trafo;
+        aiMatrix4x4 trafo;
         aiIdentityMatrix4(&trafo);
 
         min->x = min->y = min->z =  1e10f;
