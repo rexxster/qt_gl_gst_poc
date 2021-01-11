@@ -13,54 +13,48 @@ template<class T>
 class AsyncQueue
 {
 public:
-    AsyncQueue() : m_waitingReaders(0) {}
+  AsyncQueue() : m_waitingReaders(0) {}
 
-    int size()
-    {
-        QMutexLocker locker(&m_mutex);
-        return this->m_buffer.size();
+  int size() {
+    QMutexLocker locker(&m_mutex);
+    return this->m_buffer.size();
+  }
+
+  void put(const T &item) {
+    QMutexLocker locker(&m_mutex);
+    this->m_buffer.push_back(item);
+    if (this->m_waitingReaders)
+      this->m_bufferIsNotEmpty.wakeOne();
+  }
+
+  bool get(T *itemDestPtr, unsigned long time_ms = 0) {
+    QMutexLocker locker(&m_mutex);
+    bool itemInQueue = false;
+
+    itemInQueue = (this->m_buffer.size()) ? true : false;
+    if (!itemInQueue && time_ms) {
+      ++(this->m_waitingReaders);
+      itemInQueue = this->m_bufferIsNotEmpty.wait(&m_mutex, time_ms);
+      --(this->m_waitingReaders);
     }
 
-    void put(const T& item)
-    {
-        QMutexLocker locker(&m_mutex);
-        this->m_buffer.push_back(item);
-        if(this->m_waitingReaders)
-            this->m_bufferIsNotEmpty.wakeOne();
+    if (itemInQueue) {
+      T item = this->m_buffer.front();
+      this->m_buffer.pop_front();
+      *itemDestPtr = item;
+      return true;
     }
-
-    bool get(T *itemDestPtr, unsigned long time_ms = 0)
-    {
-        QMutexLocker locker(&m_mutex);
-        bool itemInQueue = false;
-
-        itemInQueue = (this->m_buffer.size()) ? true : false;
-        if(!itemInQueue && time_ms)
-        {
-            ++(this->m_waitingReaders);
-            itemInQueue = this->m_bufferIsNotEmpty.wait(&m_mutex, time_ms);
-            --(this->m_waitingReaders);
-        }
-
-        if(itemInQueue)
-        {
-            T item = this->m_buffer.front();
-            this->m_buffer.pop_front();
-            *itemDestPtr = item;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+    else {
+      return false;
     }
+  }
 
 private:
-    typedef QList<T> Container;
-    QMutex m_mutex;
-    QWaitCondition m_bufferIsNotEmpty;
-    Container m_buffer;
-    short m_waitingReaders;
+  typedef QList<T> Container;
+  QMutex m_mutex;
+  QWaitCondition m_bufferIsNotEmpty;
+  Container m_buffer;
+  short m_waitingReaders;
 };
 
 

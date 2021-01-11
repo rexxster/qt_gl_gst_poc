@@ -6,25 +6,22 @@
 
 class TIGStreamerPipeline : public GStreamerPipeline
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    TIGStreamerPipeline(int vidIx,
-        const QString &videoLocation,
-        const char *renderer_slot,
-        QObject *parent);
-    ~TIGStreamerPipeline();
+  TIGStreamerPipeline(int vidIx, const QString &videoLocation,  const char *renderer_slot, QObject *parent);
+  ~TIGStreamerPipeline();
 
-    void Configure();
+  void Configure();
 
-    // bit lazy just making these public for gst callbacks, but it'll do for now
-    GstElement *m_qtdemux;
-    GstElement *m_tividdecode;
-    GstElement *m_tiaudiodecode;
-    GstElement *m_videoqueue;
+  // bit lazy just making these public for gst callbacks, but it'll do for now
+  GstElement *m_qtdemux;
+  GstElement *m_tividdecode;
+  GstElement *m_tiaudiodecode;
+  GstElement *m_videoqueue;
 
 protected:
-    static void on_new_pad(GstElement *element, GstPad *pad, TIGStreamerPipeline* p);
+  static void on_new_pad(GstElement *element, GstPad *pad, TIGStreamerPipeline *p);
 };
 
 #endif // TIGSTPIPELINE_H

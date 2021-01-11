@@ -6,22 +6,22 @@
 class GLWidget;
 
 namespace Ui {
-class ControlsForm;
+  class ControlsForm;
 }
 
 class ControlsForm : public QWidget
 {
-    Q_OBJECT
+  Q_OBJECT
     
 public:
-    explicit ControlsForm(GLWidget *glWidgetToInsert, QWidget *parent = 0);
-    ~ControlsForm();
+  explicit ControlsForm(GLWidget *glWidgetToInsert, QWidget *parent = 0);
+  ~ControlsForm();
 
 protected:
-    void closeEvent(QCloseEvent* event);
+  void closeEvent(QCloseEvent *event);
     
 private:
-    Ui::ControlsForm *ui;
+  Ui::ControlsForm *ui;
 };
 
 #endif // CONTROLSFORM_H

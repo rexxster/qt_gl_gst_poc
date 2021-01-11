@@ -8,10 +8,11 @@
 
 class YuvDebugWindow : public QDialog
 {
-    Q_OBJECT
+  Q_OBJECT
+
 public:
-    explicit YuvDebugWindow(QWidget *parent = 0);
-    QLabel *m_imageLabel;
+  explicit YuvDebugWindow(QWidget *parent = 0);
+  QLabel *m_imageLabel;
     
 signals:
     

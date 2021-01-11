@@ -9,20 +9,20 @@
 #include "controlsform.h"
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
-    QMainWindow(parent)
+  QMainWindow(parent)
 {
-    GlobalLog.SetModuleLogLevel(LOG_GL, Logger::Info);
-    GlobalLog.SetModuleLogLevel(LOG_GLSHADERS, Logger::Info);
-    GlobalLog.SetModuleLogLevel(LOG_OBJLOADER, Logger::Info);
-    GlobalLog.SetModuleLogLevel(LOG_VIDPIPELINE, Logger::Debug2);
+  GlobalLog.SetModuleLogLevel(LOG_GL, Logger::Info);
+  GlobalLog.SetModuleLogLevel(LOG_GLSHADERS, Logger::Info);
+  GlobalLog.SetModuleLogLevel(LOG_OBJLOADER, Logger::Info);
+  GlobalLog.SetModuleLogLevel(LOG_VIDPIPELINE, Logger::Debug2);
 
 #ifdef OMAP3530
-    GLWidget *glWidget = new GLPowerVRWidget(argc, argv, this);
+  GLWidget *glWidget = new GLPowerVRWidget(argc, argv, this);
 #else
-    GLWidget *glWidget = new GLWidget(argc, argv, this);
+  GLWidget *glWidget = new GLWidget(argc, argv, this);
 #endif
-    glWidget->initVideo();
+  glWidget->initVideo();
 
-    ControlsForm *controlsForm = new ControlsForm(glWidget, this);
-    setCentralWidget(controlsForm);
+  ControlsForm *controlsForm = new ControlsForm(glWidget, this);
+  setCentralWidget(controlsForm);
 }
