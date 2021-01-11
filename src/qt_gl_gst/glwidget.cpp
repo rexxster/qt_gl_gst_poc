@@ -157,6 +157,16 @@ GLWidget::initializeGL()
   setupShader(&m_UYVYAlphaMask, VidUYVYAlphaMaskShaderList, NUM_SHADERS_VIDUYVY_ALPHAMASK);
 #endif
 
+#ifdef VIDNV12_SHADERS_NEEDED
+    setupShader(&m_NV12NoEffectNormalised, VidNV12NoEffectNormalisedShaderList, NUM_SHADERS_VIDNV12_NOEFFECT_NORMALISED);
+    setupShader(&m_NV12LitNormalised, VidNV12LitNormalisedShaderList, NUM_SHADERS_VIDNV12_LIT_NORMALISED);
+    setupShader(&m_NV12NoEffect, VidNV12NoEffectShaderList, NUM_SHADERS_VIDNV12_NOEFFECT);
+    setupShader(&m_NV12Lit, VidNV12LitShaderList, NUM_SHADERS_VIDNV12_LIT);
+    setupShader(&m_NV12ColourHilight, VidNV12ColourHilightShaderList, NUM_SHADERS_VIDNV12_COLOURHILIGHT);
+    setupShader(&m_NV12ColourHilightSwap, VidNV12ColourHilightSwapShaderList, NUM_SHADERS_VIDNV12_COLOURHILIGHTSWAP);
+    setupShader(&m_NV12AlphaMask, VidNV12AlphaMaskShaderList, NUM_SHADERS_VIDNV12_ALPHAMASK);
+#endif
+
   glTexParameteri(GL_RECT_VID_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_RECT_VID_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_RECT_VID_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -452,7 +462,8 @@ GLWidget::newFrame(int vidIx)
       GstMapInfo info;
       switch (this->m_vidTextures[vidIx].colourFormat) {
       case ColFmt_I420:
-           default:
+      case ColFmt_NV12:
+      default:
         if (gst_buffer_map((GstBuffer *)this->m_vidTextures[vidIx].buffer, &info, GST_MAP_READ)) {
           yuvImage = QImage(info.data, this->m_vidTextures[vidIx].width, this->m_vidTextures[vidIx].height*1.5f, QImage::Format_Indexed8);
           gst_buffer_unmap((GstBuffer *)this->m_vidTextures[vidIx].buffer, &info);
@@ -487,6 +498,7 @@ GLWidget::loadNewTexture(int vidIx)
 
   switch (this->m_vidTextures[vidIx].colourFormat) {
   case ColFmt_I420:
+  case ColFmt_NV12:
     if (gst_buffer_map((GstBuffer *)this->m_vidTextures[vidIx].buffer, &info, GST_MAP_READ)) {
       glTexImage2D(GL_RECT_VID_TEXTURE_2D, 0, GL_LUMINANCE,
                    this->m_vidTextures[vidIx].width, this->m_vidTextures[vidIx].height*1.5f,
@@ -1058,6 +1070,34 @@ GLWidget::setAppropriateVidShader(int vidIx)
         break;
       }
       break;
+#endif
+#ifdef VIDNV12_SHADERS_NEEDED
+    case ColFmt_NV12:
+        qWarning() << "NV12 " << this->m_vidTextures[vidIx].effect;
+        switch (this->m_vidTextures[vidIx].effect) {
+        case VidShaderNoEffect:
+            this->m_vidTextures[vidIx].shader = &m_NV12NoEffect;
+            break;
+        case VidShaderNoEffectNormalisedTexCoords:
+            this->m_vidTextures[vidIx].shader = &m_NV12NoEffectNormalised;
+            break;
+        case VidShaderLit:
+            this->m_vidTextures[vidIx].shader = &m_NV12Lit;
+            break;
+        case VidShaderLitNormalisedTexCoords:
+            this->m_vidTextures[vidIx].shader = &m_NV12LitNormalised;
+            break;
+        case VidShaderColourHilight:
+            this->m_vidTextures[vidIx].shader = &m_NV12ColourHilight;
+            break;
+        case VidShaderColourHilightSwap:
+            this->m_vidTextures[vidIx].shader = &m_NV12ColourHilightSwap;
+            break;
+        case VidShaderAlphaMask:
+            this->m_vidTextures[vidIx].shader = &m_NV12AlphaMask;
+            break;
+        }
+        break;
 #endif
     default:
       LOG(LOG_GL, Logger::Error, "Haven't implemented a shader for colour format %d yet, or its not enabled in the build",

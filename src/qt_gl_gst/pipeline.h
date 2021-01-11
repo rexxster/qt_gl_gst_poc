@@ -10,6 +10,7 @@
 typedef enum _ColFormat
 {
   // these relate to fourCC codes, but abstract video framework system from outside:
+  ColFmt_NV12 = COLFMT_FOUR_CC('N', 'V', '1', '2'),
   ColFmt_I420 = COLFMT_FOUR_CC('I', '4', '2', '0'),
   ColFmt_IYUV = COLFMT_FOUR_CC('I', 'Y', 'U', 'V'),
   ColFmt_YV12 = COLFMT_FOUR_CC('Y', 'V', '1', '2'),

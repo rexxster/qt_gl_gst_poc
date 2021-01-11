@@ -302,12 +302,17 @@ GStreamerPipeline::discoverColFormat(GstBuffer *buf, GstCaps *pCaps)
 //  gst_structure_get_fourcc(pStructure, "format", &uiFourCC);
 
     switch (uiFourCC) {
-    case GST_VIDEO_FORMAT_I420:
     case GST_VIDEO_FORMAT_NV12:
+    case GST_MAKE_FOURCC('N', 'V', '1', '2'):
+        LOG(LOG_VIDPIPELINE, Logger::Info, "NV12 (0x%X)", uiFourCC);
+        ret = ColFmt_NV12;
+        break;
+
+    case GST_VIDEO_FORMAT_I420:
     case GST_MAKE_FOURCC('I', '4', '2', '0'):
-      LOG(LOG_VIDPIPELINE, Logger::Info, "I420 (0x%X)", uiFourCC);
-      ret = ColFmt_I420;
-      break;
+        LOG(LOG_VIDPIPELINE, Logger::Info, "I420 (0x%X)", uiFourCC);
+        ret = ColFmt_I420;
+        break;
 
     case GST_VIDEO_FORMAT_IYU1:
     case GST_VIDEO_FORMAT_IYU2:

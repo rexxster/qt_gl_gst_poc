@@ -111,3 +111,55 @@ GLShaderModule VidUYVYAlphaMaskShaderList[NUM_SHADERS_VIDUYVY_ALPHAMASK] =
   { "shaders/alphamask.vert", QGLShader::Vertex }
 };
 #endif
+
+#ifdef VIDNV12_SHADERS_NEEDED
+/* NV12 */
+GLShaderModule VidNV12NoEffectNormalisedShaderList[NUM_SHADERS_VIDNV12_NOEFFECT_NORMALISED] =
+{
+  { "shaders/yuv2rgbNV12-normalisedtexcoords"VIDCONV_FRAG_SHADER_SUFFIX".frag", QGLShader::Fragment },
+  { "shaders/noeffect.vert", QGLShader::Vertex },
+  { "shaders/noeffect.frag", QGLShader::Fragment }
+};
+
+GLShaderModule VidNV12LitNormalisedShaderList[NUM_SHADERS_VIDNV12_LIT_NORMALISED] =
+{
+  { "shaders/yuv2rgbNV12-normalisedtexcoords"VIDCONV_FRAG_SHADER_SUFFIX".frag", QGLShader::Fragment },
+  { "shaders/vidlighting.vert", QGLShader::Vertex },
+  { "shaders/vidlighting.frag", QGLShader::Fragment }
+};
+
+GLShaderModule VidNV12NoEffectShaderList[NUM_SHADERS_VIDNV12_NOEFFECT] =
+{
+  { "shaders/yuv2rgbNV12"VIDCONV_FRAG_SHADER_SUFFIX".frag", QGLShader::Fragment },
+  { "shaders/noeffect.vert", QGLShader::Vertex },
+  { "shaders/noeffect.frag", QGLShader::Fragment }
+};
+
+GLShaderModule VidNV12LitShaderList[NUM_SHADERS_VIDNV12_LIT] =
+{
+  { "shaders/yuv2rgbNV12"VIDCONV_FRAG_SHADER_SUFFIX".frag", QGLShader::Fragment },
+  { "shaders/vidlighting.vert", QGLShader::Vertex },
+  { "shaders/vidlighting.frag", QGLShader::Fragment }
+};
+
+GLShaderModule VidNV12ColourHilightShaderList[NUM_SHADERS_VIDNV12_COLOURHILIGHT] =
+{
+  { "shaders/yuv2rgbNV12"VIDCONV_FRAG_SHADER_SUFFIX".frag", QGLShader::Fragment },
+  { "shaders/noeffect.vert", QGLShader::Vertex },
+  { "shaders/colourhilight.frag", QGLShader::Fragment }
+};
+
+GLShaderModule VidNV12ColourHilightSwapShaderList[NUM_SHADERS_VIDNV12_COLOURHILIGHTSWAP] =
+{
+  { "shaders/yuv2rgbNV12"VIDCONV_FRAG_SHADER_SUFFIX".frag", QGLShader::Fragment },
+  { "shaders/noeffect.vert", QGLShader::Vertex },
+  { "shaders/colourhilightswap.frag", QGLShader::Fragment }
+};
+
+GLShaderModule VidNV12AlphaMaskShaderList[NUM_SHADERS_VIDNV12_ALPHAMASK] =
+{
+  { "shaders/yuv2rgbNV12"VIDCONV_FRAG_SHADER_SUFFIX".frag", QGLShader::Fragment },
+  { "shaders/alphamask"VIDCONV_FRAG_SHADER_SUFFIX".frag", QGLShader::Fragment },
+  { "shaders/alphamask.vert", QGLShader::Vertex }
+};
+#endif

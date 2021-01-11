@@ -54,5 +54,28 @@ extern GLShaderModule VidUYVYColourHilightSwapShaderList[NUM_SHADERS_VIDUYVY_COL
 extern GLShaderModule VidUYVYAlphaMaskShaderList[NUM_SHADERS_VIDUYVY_ALPHAMASK];
 #endif
 
+#ifdef VIDNV12_SHADERS_NEEDED
+/* NV12 */
+#define NUM_SHADERS_VIDNV12_NOEFFECT_NORMALISED       3
+extern GLShaderModule VidNV12NoEffectNormalisedShaderList[NUM_SHADERS_VIDNV12_NOEFFECT_NORMALISED];
+
+#define NUM_SHADERS_VIDNV12_LIT_NORMALISED       3
+extern GLShaderModule VidNV12LitNormalisedShaderList[NUM_SHADERS_VIDNV12_LIT_NORMALISED];
+
+#define NUM_SHADERS_VIDNV12_NOEFFECT       3
+extern GLShaderModule VidNV12NoEffectShaderList[NUM_SHADERS_VIDNV12_NOEFFECT];
+
+#define NUM_SHADERS_VIDNV12_LIT       3
+extern GLShaderModule VidNV12LitShaderList[NUM_SHADERS_VIDNV12_LIT];
+
+#define NUM_SHADERS_VIDNV12_COLOURHILIGHT       3
+extern GLShaderModule VidNV12ColourHilightShaderList[NUM_SHADERS_VIDNV12_COLOURHILIGHT];
+
+#define NUM_SHADERS_VIDNV12_COLOURHILIGHTSWAP       3
+extern GLShaderModule VidNV12ColourHilightSwapShaderList[NUM_SHADERS_VIDNV12_COLOURHILIGHTSWAP];
+
+#define NUM_SHADERS_VIDNV12_ALPHAMASK       3
+extern GLShaderModule VidNV12AlphaMaskShaderList[NUM_SHADERS_VIDNV12_ALPHAMASK];
+#endif
 
 #endif // SHADERLISTS_H
