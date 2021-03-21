@@ -41,7 +41,7 @@ class GstOutgoingBufThread : public QThread
 public:
   GstOutgoingBufThread(GStreamerPipeline *pipelinePtr, QObject *parent = 0) :
     QThread(parent), m_pipelinePtr(pipelinePtr), m_keepRunningOutgoingThread(true) { }
-    void run();
+  void run();
 
 public slots:
   void quit() { m_keepRunningOutgoingThread = false; } // Not using an event loop for this thread

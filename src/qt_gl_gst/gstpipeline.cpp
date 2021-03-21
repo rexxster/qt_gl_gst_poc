@@ -31,52 +31,51 @@ GStreamerPipeline::Configure()
 #endif
 
   // Create the elements
-  this->m_pipeline = gst_pipeline_new(NULL);
-  if (this->m_videoLocation.isEmpty()) {
+  m_pipeline = gst_pipeline_new(NULL);
+  if (m_videoLocation.isEmpty()) {
     LOG(LOG_VIDPIPELINE, Logger::Info, "No video file specified. Using video test source.");
-    this->m_source = gst_element_factory_make("videotestsrc", "testsrc");
+    m_source = gst_element_factory_make("videotestsrc", "testsrc");
   }
   else {
-    this->m_source = gst_element_factory_make("filesrc", "filesrc");
-    g_object_set(G_OBJECT(this->m_source), "location", /*"video.avi"*/ m_videoLocation.toUtf8().constData(), NULL);
+    m_source = gst_element_factory_make("filesrc", "filesrc");
+    g_object_set(G_OBJECT(m_source), "location", /*"video.avi"*/ m_videoLocation.toUtf8().constData(), NULL);
   }
-  this->m_decodebin = gst_element_factory_make("decodebin", "decodebin");
-  this->m_videosink = gst_element_factory_make("fakesink", "videosink");
-  this->m_audiosink = gst_element_factory_make("alsasink", "audiosink");
-  this->m_audioconvert = gst_element_factory_make("audioconvert", "audioconvert");
-  this->m_audioqueue = gst_element_factory_make("queue", "audioqueue");
+  m_decodebin = gst_element_factory_make("decodebin", "decodebin");
+  m_videosink = gst_element_factory_make("fakesink", "videosink");
+  m_audiosink = gst_element_factory_make("alsasink", "audiosink");
+  m_audioconvert = gst_element_factory_make("audioconvert", "audioconvert");
+  m_audioqueue = gst_element_factory_make("queue", "audioqueue");
 
-  if (this->m_pipeline == NULL || this->m_source == NULL || this->m_decodebin == NULL ||
-      this->m_videosink == NULL || this->m_audiosink == NULL || this->m_audioconvert == NULL || this->m_audioqueue == NULL)
+  if (m_pipeline == NULL || m_source == NULL || m_decodebin == NULL ||
+      m_videosink == NULL || m_audiosink == NULL || m_audioconvert == NULL || m_audioqueue == NULL)
     g_critical("One of the GStreamer decoding elements is missing");
 
   // Setup the pipeline
-  gst_bin_add_many(GST_BIN(this->m_pipeline), this->m_source, this->m_decodebin, this->m_videosink,
-                   this->m_audiosink, this->m_audioconvert, this->m_audioqueue, /*videoqueue,*/ NULL);
-  g_signal_connect(this->m_decodebin, "pad-added", G_CALLBACK(on_new_pad), this);
+  gst_bin_add_many(GST_BIN(m_pipeline), m_source, m_decodebin, m_videosink,
+                   m_audiosink, m_audioconvert, m_audioqueue, /*videoqueue,*/ NULL);
+  g_signal_connect(m_decodebin, "pad-added", G_CALLBACK(on_new_pad), this);
 
   // Link the elements
-  gst_element_link(this->m_source, this->m_decodebin);
-  gst_element_link(this->m_audioqueue, this->m_audioconvert);
-  gst_element_link(this->m_audioconvert, this->m_audiosink);
+  gst_element_link(m_source, m_decodebin);
+  gst_element_link(m_audioqueue, m_audioconvert);
+  gst_element_link(m_audioconvert, m_audiosink);
 
   m_bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
   gst_bus_add_watch(m_bus, (GstBusFunc)bus_call, this);
   gst_object_unref(m_bus);
 
-  gst_element_set_state(this->m_pipeline, GST_STATE_PAUSED);
-
+  gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
 }
 
 void
 GStreamerPipeline::Start()
 {
-  GstStateChangeReturn ret = gst_element_set_state(GST_ELEMENT(this->m_pipeline), GST_STATE_PLAYING);
+  GstStateChangeReturn ret = gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_PLAYING);
   if (ret == GST_STATE_CHANGE_FAILURE) {
     LOG(LOG_VIDPIPELINE, Logger::Error, "Failed to start up pipeline!");
 
     // check if there is an error message with details on the bus
-    GstMessage *msg = gst_bus_poll(this->m_bus, GST_MESSAGE_ERROR, 0);
+    GstMessage *msg = gst_bus_poll(m_bus, GST_MESSAGE_ERROR, 0);
     if (msg) {
       GError *err = NULL;
       gst_message_parse_error(msg, &err, NULL);
@@ -105,19 +104,19 @@ GStreamerPipeline::Stop()
 void
 GStreamerPipeline::cleanUp()
 {
-  gst_element_set_state(GST_ELEMENT(this->m_pipeline), GST_STATE_NULL);
+  gst_element_set_state(GST_ELEMENT(m_pipeline), GST_STATE_NULL);
 
   // Wait for both threads to finish up
   m_incomingBufThread->wait(QUEUE_CLEANUP_WAITTIME_MS);
   m_outgoingBufThread->wait(QUEUE_CLEANUP_WAITTIME_MS);
 
   GstBuffer *buf;
-  while (this->m_incomingBufQueue.size()) {
-    this->m_incomingBufQueue.get((void **)(&buf));
+  while (m_incomingBufQueue.size()) {
+    m_incomingBufQueue.get((void **)(&buf));
     gst_buffer_unref(buf);
   }
-  while (this->m_outgoingBufQueue.size()) {
-    this->m_outgoingBufQueue.get((void **)(&buf));
+  while (m_outgoingBufQueue.size()) {
+    m_outgoingBufQueue.get((void **)(&buf));
     gst_buffer_unref(buf);
   }
 
@@ -242,7 +241,7 @@ GStreamerPipeline::discoverColFormat(GstBuffer *buf, GstCaps *pCaps)
 //if (gst_buffer_map(buf, &info, GST_MAP_READ)) {
     pTmp = gst_caps_to_string(pCaps);
     LOG(LOG_VIDPIPELINE, Logger::Info, "%s", pTmp);
-//    g_free(pTmp);
+//  g_free(pTmp);
 //}
 
 //LOG(LOG_VIDPIPELINE, Logger::Debug1, "buffer-size in bytes: %d", GST_BUFFER_SIZE(buf));

@@ -241,13 +241,13 @@ private:
   QGLShaderProgram m_UYVYAlphaMask;
 #endif
 #ifdef VIDNV12_SHADERS_NEEDED
-    QGLShaderProgram m_NV12NoEffectNormalised;
-    QGLShaderProgram m_NV12LitNormalised;
-    QGLShaderProgram m_NV12NoEffect;
-    QGLShaderProgram m_NV12Lit;
-    QGLShaderProgram m_NV12ColourHilight;
-    QGLShaderProgram m_NV12ColourHilightSwap;
-    QGLShaderProgram m_NV12AlphaMask;
+  QGLShaderProgram m_NV12NoEffectNormalised;
+  QGLShaderProgram m_NV12LitNormalised;
+  QGLShaderProgram m_NV12NoEffect;
+  QGLShaderProgram m_NV12Lit;
+  QGLShaderProgram m_NV12ColourHilight;
+  QGLShaderProgram m_NV12ColourHilightSwap;
+  QGLShaderProgram m_NV12AlphaMask;
 #endif
 
   // Video shader effects vars - for simplicitys sake make them general to all vids
